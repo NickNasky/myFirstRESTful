@@ -33,6 +33,17 @@ app.post('/', (req, res) => {
   });
 });
 
+app.put('/:id', (req, res) => {
+  let body = req.body;
+  let id = req.params.id;
+
+  knex('homework').where('id', id) .update(body)
+  .returning('*')
+  .then(info => {
+    res.json(info[0])
+  });
+});
+
 function getInfo() {
   return knex('*').from('homework');
 }
