@@ -26,22 +26,36 @@ app.get('/:id', (req, res) => {
 
 app.post('/', (req, res) => {
   let body = req.body;
+  if (validate(body)) {
   knex('homework').insert(body)
   .returning('*')
   .then(info => {
     res.json(info[0])
-  });
+  })
+  } else {
+    res.status(500);
+    res.json({
+      'Error': 'Please fill all fields correctly.'
+    });
+  };
 });
 
 app.put('/:id', (req, res) => {
   let body = req.body;
   let id = req.params.id;
 
+  if (validate(body)) {
   knex('homework').where('id', id) .update(body)
   .returning('*')
-  .then(info => {
-    res.json(info[0])
-  });
+    .then(info => {
+      res.json(info[0])
+    })
+  } else {
+    res.status(500);
+    res.json({
+      'Error': 'Please fill all fields correctly.'
+    })
+  }
 });
 
 app.delete('/:id', (req, res) => {
@@ -57,5 +71,15 @@ app.delete('/:id', (req, res) => {
 
 function getInfo() {
   return knex('*').from('homework');
+}
+
+function validate(data) {
+  let verifyName = typeof data.name == 'string' && data.name.trim() != '';
+  let verifyDate = typeof data.due_date == 'date' && data.due_date.trim() != '';
+  let verifyPriority = typeof data.priority == 'integer' && data.name.trim() != '';
+  let verifyDesc = typeof data.description == 'text' && data.name.trim() != '';
+  let verifySubject = typeof data.subject == 'string' && data.subject.trim() != '';
+
+  return verifySubject && verifyDesc && verifyDate && verifyPriority && verifyName
 }
 app.listen(port);
