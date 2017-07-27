@@ -44,6 +44,17 @@ app.put('/:id', (req, res) => {
   });
 });
 
+app.delete('/:id', (req, res) => {
+  let id = req.params.id;
+
+  knex('homework').where('id', id)
+  .del().then(deleted => {
+    res.json({
+      'deleted': true
+    });
+  });
+})
+
 function getInfo() {
   return knex('*').from('homework');
 }
